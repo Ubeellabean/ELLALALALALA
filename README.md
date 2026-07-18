@@ -1,1 +1,708 @@
-# ELLALALALALA
+# ELLALALALALA<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Half-Life — Caffeine Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+
+/* =========================================================================
+   CONFIG — everything a user is likely to want to tweak lives in one place
+   below, in the <script> block, under the CONFIG object. This CSS block
+   only handles look & feel.
+   ========================================================================= */
+
+:root{
+  --espresso:   #1E1512;   /* background, near-black brown   */
+  --espresso-2: #2A1F1A;   /* panel background, one step up  */
+  --crema:      #F2E8D8;   /* primary text, warm cream        */
+  --steam:      #9A8C7D;   /* secondary text / hairlines      */
+  --caramel:    #C88A3B;   /* accent — brand, links, "on"     */
+  --rust:       #B0543A;   /* warning / over-limit accent     */
+  --sage:       #7C9070;   /* safe / under-limit accent       */
+
+  --display: 'Fraunces', serif;
+  --body: 'Work Sans', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+
+body{
+  background:var(--espresso);
+  color:var(--crema);
+  font-family:var(--body);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:4rem;
+}
+
+a{ color:var(--caramel); }
+
+.wrap{
+  max-width:840px;
+  margin:0 auto;
+  padding:0 1.5rem;
+}
+
+/* ---------- header / hero ---------- */
+
+header.hero{
+  padding:3.5rem 0 2.5rem;
+  border-bottom:1px solid rgba(154,140,125,0.25);
+}
+
+.eyebrow{
+  font-family:var(--mono);
+  font-size:0.72rem;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--steam);
+  margin-bottom:1.1rem;
+}
+
+.hero-grid{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:1.5rem;
+}
+
+.level-figure{
+  font-family:var(--display);
+  font-weight:600;
+  font-size:clamp(3.2rem, 9vw, 5rem);
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-0.02em;
+}
+
+.level-figure span{ font-size:0.32em; color:var(--steam); font-family:var(--body); font-weight:500; }
+
+.level-label{
+  margin-top:0.6rem;
+  color:var(--steam);
+  font-size:0.95rem;
+}
+
+.status-pill{
+  font-family:var(--mono);
+  font-size:0.78rem;
+  padding:0.45rem 0.85rem;
+  border-radius:100px;
+  border:1px solid currentColor;
+  white-space:nowrap;
+}
+.status-safe{ color:var(--sage); }
+.status-warn{ color:var(--rust); }
+
+.half-life-note{
+  font-family:var(--mono);
+  font-size:0.8rem;
+  color:var(--steam);
+  margin-top:1.4rem;
+}
+.half-life-note b{ color:var(--crema); font-weight:600; }
+
+/* ---------- chart (signature element) ---------- */
+
+section.chart-section{
+  padding:2.5rem 0 1rem;
+  border-bottom:1px solid rgba(154,140,125,0.25);
+}
+
+h2{
+  font-family:var(--display);
+  font-weight:600;
+  font-size:1.3rem;
+  margin-bottom:0.3rem;
+}
+
+.chart-sub{ color:var(--steam); font-size:0.85rem; margin-bottom:1.2rem; }
+
+#chartCanvas{
+  width:100%;
+  height:260px;
+  display:block;
+}
+
+.legend{
+  display:flex;
+  gap:1.5rem;
+  flex-wrap:wrap;
+  margin-top:0.9rem;
+  font-family:var(--mono);
+  font-size:0.72rem;
+  color:var(--steam);
+}
+.legend span{ display:inline-flex; align-items:center; gap:0.4rem; }
+.swatch{ width:10px; height:10px; border-radius:2px; display:inline-block; }
+
+/* ---------- add drink ---------- */
+
+section.add-section{ padding:2.5rem 0; border-bottom:1px solid rgba(154,140,125,0.25); }
+
+.presets{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.6rem;
+  margin-bottom:1.4rem;
+}
+
+.preset-chip{
+  font-family:var(--mono);
+  font-size:0.8rem;
+  background:var(--espresso-2);
+  border:1px solid rgba(154,140,125,0.35);
+  color:var(--crema);
+  padding:0.55rem 0.9rem;
+  border-radius:8px;
+  cursor:pointer;
+  transition:border-color 0.15s ease, transform 0.1s ease;
+  text-align:left;
+}
+.preset-chip:hover{ border-color:var(--caramel); }
+.preset-chip:active{ transform:scale(0.98); }
+.preset-chip small{ display:block; color:var(--steam); margin-top:0.15rem; }
+
+.custom-form{
+  display:grid;
+  grid-template-columns:1fr 110px 130px auto;
+  gap:0.7rem;
+  align-items:end;
+}
+@media (max-width:640px){ .custom-form{ grid-template-columns:1fr 1fr; } }
+
+.field label{
+  display:block;
+  font-family:var(--mono);
+  font-size:0.68rem;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--steam);
+  margin-bottom:0.4rem;
+}
+
+.field input{
+  width:100%;
+  background:var(--espresso-2);
+  border:1px solid rgba(154,140,125,0.35);
+  color:var(--crema);
+  font-family:var(--body);
+  font-size:0.9rem;
+  padding:0.6rem 0.7rem;
+  border-radius:8px;
+}
+.field input:focus{ outline:2px solid var(--caramel); outline-offset:1px; }
+
+button.add-btn{
+  background:var(--caramel);
+  color:var(--espresso);
+  border:none;
+  font-family:var(--body);
+  font-weight:600;
+  font-size:0.9rem;
+  padding:0.65rem 1.1rem;
+  border-radius:8px;
+  cursor:pointer;
+}
+button.add-btn:hover{ filter:brightness(1.08); }
+
+/* ---------- log ---------- */
+
+section.log-section{ padding:2.5rem 0; }
+
+.daily-bar-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  margin-bottom:0.5rem;
+  font-family:var(--mono);
+  font-size:0.8rem;
+  color:var(--steam);
+}
+.daily-bar-row b{ color:var(--crema); font-size:0.95rem; }
+
+.daily-bar{
+  height:8px;
+  background:var(--espresso-2);
+  border-radius:100px;
+  overflow:hidden;
+  margin-bottom:1.6rem;
+}
+.daily-bar-fill{
+  height:100%;
+  background:var(--sage);
+  border-radius:100px;
+  transition:width 0.3s ease, background 0.3s ease;
+}
+
+ul.log-list{ list-style:none; display:flex; flex-direction:column; gap:0.5rem; }
+
+.log-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:var(--espresso-2);
+  border:1px solid rgba(154,140,125,0.2);
+  padding:0.75rem 1rem;
+  border-radius:8px;
+}
+
+.log-item-left{ display:flex; flex-direction:column; }
+.log-item-name{ font-size:0.92rem; }
+.log-item-time{ font-family:var(--mono); font-size:0.72rem; color:var(--steam); }
+.log-item-right{ display:flex; align-items:center; gap:1rem; }
+.log-item-mg{ font-family:var(--mono); font-size:0.85rem; color:var(--caramel); }
+
+.remove-btn{
+  background:none;
+  border:none;
+  color:var(--steam);
+  cursor:pointer;
+  font-size:1rem;
+  line-height:1;
+  padding:0.2rem 0.4rem;
+}
+.remove-btn:hover{ color:var(--rust); }
+
+.empty-state{
+  color:var(--steam);
+  font-size:0.88rem;
+  font-style:italic;
+  padding:1.2rem 0;
+}
+
+footer{
+  max-width:840px;
+  margin:0 auto;
+  padding:2rem 1.5rem 0;
+  color:var(--steam);
+  font-size:0.75rem;
+  font-family:var(--mono);
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ transition:none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Half-Life · Caffeine Tracker</div>
+    <div class="hero-grid">
+      <div>
+        <div class="level-figure" id="currentLevel">0<span>mg in system</span></div>
+        <div class="level-label" id="currentLevelLabel">Log a drink to start tracking.</div>
+      </div>
+      <div class="status-pill status-safe" id="statusPill">clear</div>
+    </div>
+    <div class="half-life-note">
+      Caffeine clears with a half-life of <b id="halfLifeReadout">5</b> hours. This is an estimate — actual metabolism varies by person.
+    </div>
+  </header>
+
+  <section class="chart-section">
+    <h2>Today's curve</h2>
+    <div class="chart-sub">Modeled caffeine level from midnight through the next 24 hours. Dashed line marks now.</div>
+    <canvas id="chartCanvas"></canvas>
+    <div class="legend">
+      <span><i class="swatch" style="background:#C88A3B"></i> caffeine level</span>
+      <span><i class="swatch" style="background:#B0543A"></i> daily guideline (<span id="legendLimit">400</span>mg)</span>
+    </div>
+  </section>
+
+  <section class="add-section">
+    <h2>Log a drink</h2>
+    <div class="chart-sub">Tap a preset, or enter something custom.</div>
+    <div class="presets" id="presetContainer"></div>
+
+    <div class="custom-form">
+      <div class="field">
+        <label for="drinkName">Name</label>
+        <input type="text" id="drinkName" placeholder="Cold brew">
+      </div>
+      <div class="field">
+        <label for="drinkMg">Caffeine (mg)</label>
+        <input type="number" id="drinkMg" placeholder="150" min="0">
+      </div>
+      <div class="field">
+        <label for="drinkTime">Time</label>
+        <input type="time" id="drinkTime">
+      </div>
+      <button class="add-btn" id="addCustomBtn">Add</button>
+    </div>
+  </section>
+
+  <section class="log-section">
+    <h2>Today's log</h2>
+    <div class="daily-bar-row">
+      <span>Total today</span>
+      <b id="dailyTotalReadout">0 mg</b>
+    </div>
+    <div class="daily-bar"><div class="daily-bar-fill" id="dailyBarFill" style="width:0%"></div></div>
+    <ul class="log-list" id="logList"></ul>
+  </section>
+
+</div>
+
+<footer>
+  Estimates only — not medical advice. Individual caffeine sensitivity and metabolism vary widely.
+</footer>
+
+<script>
+/* =========================================================================
+   CONFIG
+   Adjust these values to change how the calculator behaves.
+   ========================================================================= */
+const CONFIG = {
+  // Average caffeine half-life in hours. Widely cited range is 3–7 hours;
+  // 5 is a commonly used population average.
+  HALF_LIFE_HOURS: 5,
+
+  // Commonly cited daily guideline for healthy adults (FDA/EFSA use ~400mg).
+  DAILY_LIMIT_MG: 400,
+
+  // Preset drinks shown as quick-add chips. mg values are typical estimates,
+  // not exact — real caffeine content varies by brand, roast, and size.
+  PRESETS: [
+    { name: "Drip coffee",   mg: 95,  size: "8 oz" },
+    { name: "Espresso shot", mg: 63,  size: "1 oz"  },
+    { name: "Cold brew",     mg: 155, size: "12 oz" },
+    { name: "Black tea",     mg: 47,  size: "8 oz"  },
+    { name: "Green tea",     mg: 28,  size: "8 oz"  },
+    { name: "Energy drink",  mg: 80,  size: "8 oz"  },
+    { name: "Cola",          mg: 34,  size: "12 oz" },
+    { name: "Matcha",        mg: 70,  size: "8 oz"  },
+  ],
+
+  // Chart resolution: number of points drawn across the 24h window.
+  CHART_POINTS: 144,
+};
+
+/* =========================================================================
+   STATE
+   In-memory only, by design (this file runs inside a chat preview sandbox
+   that blocks localStorage/sessionStorage). Once you have this hosted on
+   your own GitHub Pages site, you can make it persist across visits by
+   swapping the loadDrinks()/saveDrinks() functions below for real
+   localStorage calls — see the comment inside each function.
+   ========================================================================= */
+let drinks = []; // { id, name, mg, timestamp (ms since epoch) }
+
+function loadDrinks(){
+  // Swap this for: const raw = localStorage.getItem('caffeine-log');
+  // return raw ? JSON.parse(raw) : [];
+  return [];
+}
+
+function saveDrinks(){
+  // Swap this for: localStorage.setItem('caffeine-log', JSON.stringify(drinks));
+  // No-op in this environment — state simply lives for the current session.
+}
+
+drinks = loadDrinks();
+
+/* =========================================================================
+   MATH
+   ========================================================================= */
+
+// Remaining fraction of a dose after `hours` have passed, given half-life.
+function decayFraction(hours){
+  if(hours < 0) return 0;
+  return Math.pow(0.5, hours / CONFIG.HALF_LIFE_HOURS);
+}
+
+// Total mg in system at a given point in time (ms since epoch).
+function levelAt(timeMs){
+  return drinks.reduce((sum, d) => {
+    const hoursSince = (timeMs - d.timestamp) / 3600000;
+    if(hoursSince < 0) return sum; // drink hasn't happened yet
+    return sum + d.mg * decayFraction(hoursSince);
+  }, 0);
+}
+
+function todayTotalMg(){
+  const startOfDay = new Date(); startOfDay.setHours(0,0,0,0);
+  return drinks
+    .filter(d => d.timestamp >= startOfDay.getTime())
+    .reduce((sum, d) => sum + d.mg, 0);
+}
+
+/* =========================================================================
+   RENDER — hero figures
+   ========================================================================= */
+
+function renderHero(){
+  const now = Date.now();
+  const level = levelAt(now);
+  document.getElementById('currentLevel').innerHTML =
+    Math.round(level) + '<span>mg in system</span>';
+  document.getElementById('halfLifeReadout').textContent = CONFIG.HALF_LIFE_HOURS;
+
+  const pill = document.getElementById('statusPill');
+  const total = todayTotalMg();
+  if(total > CONFIG.DAILY_LIMIT_MG){
+    pill.textContent = 'over guideline';
+    pill.className = 'status-pill status-warn';
+  } else if(total > CONFIG.DAILY_LIMIT_MG * 0.75){
+    pill.textContent = 'approaching limit';
+    pill.className = 'status-pill status-warn';
+  } else {
+    pill.textContent = 'within guideline';
+    pill.className = 'status-pill status-safe';
+  }
+
+  const label = document.getElementById('currentLevelLabel');
+  if(drinks.length === 0){
+    label.textContent = 'Log a drink to start tracking.';
+  } else {
+    // time until level drops below 10mg (effectively cleared)
+    let hoursToClear = 0;
+    while(levelAt(now + hoursToClear*3600000) > 10 && hoursToClear < 48){
+      hoursToClear += 0.25;
+    }
+    label.textContent = `Roughly ${hoursToClear.toFixed(1)}h until this clears below 10mg.`;
+  }
+}
+
+/* =========================================================================
+   RENDER — chart (canvas, no external libraries)
+   ========================================================================= */
+
+function renderChart(){
+  const canvas = document.getElementById('chartCanvas');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 260 * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = 260;
+  const padL = 34, padR = 10, padT = 14, padB = 24;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+
+  ctx.clearRect(0,0,W,H);
+
+  const startOfDay = new Date(); startOfDay.setHours(0,0,0,0);
+  const startMs = startOfDay.getTime();
+  const totalHours = 24;
+  const now = Date.now();
+
+  // Build the curve
+  const points = [];
+  let maxLevel = CONFIG.DAILY_LIMIT_MG; // ensure guideline line is always visible
+  for(let i=0;i<=CONFIG.CHART_POINTS;i++){
+    const t = startMs + (i/CONFIG.CHART_POINTS) * totalHours * 3600000;
+    const lvl = levelAt(t);
+    points.push({ t, lvl });
+    if(lvl > maxLevel) maxLevel = lvl;
+  }
+  maxLevel *= 1.15;
+
+  const xForT = (t) => padL + ((t - startMs)/(totalHours*3600000)) * plotW;
+  const yForLvl = (lvl) => padT + plotH - (lvl / maxLevel) * plotH;
+
+  // gridlines (every 6h)
+  ctx.strokeStyle = 'rgba(154,140,125,0.18)';
+  ctx.lineWidth = 1;
+  ctx.font = "11px 'JetBrains Mono', monospace";
+  ctx.fillStyle = '#9A8C7D';
+  for(let h=0; h<=24; h+=6){
+    const x = padL + (h/24)*plotW;
+    ctx.beginPath();
+    ctx.moveTo(x, padT);
+    ctx.lineTo(x, padT+plotH);
+    ctx.stroke();
+    const label = h===0 ? '12a' : h<12 ? h+'a' : h===12 ? '12p' : (h-12)+'p';
+    ctx.fillText(label, x-10, H-6);
+  }
+
+  // guideline (daily limit)
+  const limitY = yForLvl(CONFIG.DAILY_LIMIT_MG);
+  ctx.strokeStyle = '#B0543A';
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  ctx.moveTo(padL, limitY);
+  ctx.lineTo(padL+plotW, limitY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // now line
+  if(now >= startMs && now <= startMs + totalHours*3600000){
+    const nowX = xForT(now);
+    ctx.strokeStyle = '#F2E8D8';
+    ctx.globalAlpha = 0.5;
+    ctx.setLineDash([2,3]);
+    ctx.beginPath();
+    ctx.moveTo(nowX, padT);
+    ctx.lineTo(nowX, padT+plotH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+  }
+
+  // area fill under curve
+  ctx.beginPath();
+  ctx.moveTo(xForT(points[0].t), yForLvl(0));
+  points.forEach(p => ctx.lineTo(xForT(p.t), yForLvl(p.lvl)));
+  ctx.lineTo(xForT(points[points.length-1].t), yForLvl(0));
+  ctx.closePath();
+  const grad = ctx.createLinearGradient(0,padT,0,padT+plotH);
+  grad.addColorStop(0, 'rgba(200,138,59,0.35)');
+  grad.addColorStop(1, 'rgba(200,138,59,0.02)');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // curve line
+  ctx.beginPath();
+  points.forEach((p,i) => {
+    const x = xForT(p.t), y = yForLvl(p.lvl);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = '#C88A3B';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  document.getElementById('legendLimit').textContent = CONFIG.DAILY_LIMIT_MG;
+}
+
+/* =========================================================================
+   RENDER — log list + daily bar
+   ========================================================================= */
+
+function renderLog(){
+  const list = document.getElementById('logList');
+  list.innerHTML = '';
+
+  const startOfDay = new Date(); startOfDay.setHours(0,0,0,0);
+  const todays = drinks
+    .filter(d => d.timestamp >= startOfDay.getTime())
+    .sort((a,b) => a.timestamp - b.timestamp);
+
+  if(todays.length === 0){
+    list.innerHTML = '<li class="empty-state">Nothing logged yet today.</li>';
+  } else {
+    todays.forEach(d => {
+      const li = document.createElement('li');
+      li.className = 'log-item';
+      const time = new Date(d.timestamp);
+      const timeStr = time.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+      li.innerHTML = `
+        <div class="log-item-left">
+          <span class="log-item-name">${escapeHtml(d.name)}</span>
+          <span class="log-item-time">${timeStr}</span>
+        </div>
+        <div class="log-item-right">
+          <span class="log-item-mg">${d.mg} mg</span>
+          <button class="remove-btn" data-id="${d.id}" aria-label="Remove ${escapeHtml(d.name)}">✕</button>
+        </div>
+      `;
+      list.appendChild(li);
+    });
+  }
+
+  list.querySelectorAll('.remove-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      drinks = drinks.filter(d => d.id !== btn.dataset.id);
+      saveDrinks();
+      renderAll();
+    });
+  });
+
+  const total = todayTotalMg();
+  document.getElementById('dailyTotalReadout').textContent = `${Math.round(total)} mg`;
+  const pct = Math.min(100, (total / CONFIG.DAILY_LIMIT_MG) * 100);
+  const fill = document.getElementById('dailyBarFill');
+  fill.style.width = pct + '%';
+  fill.style.background = total > CONFIG.DAILY_LIMIT_MG ? 'var(--rust)' : 'var(--sage)';
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* =========================================================================
+   RENDER — presets
+   ========================================================================= */
+
+function renderPresets(){
+  const container = document.getElementById('presetContainer');
+  container.innerHTML = '';
+  CONFIG.PRESETS.forEach(preset => {
+    const chip = document.createElement('button');
+    chip.className = 'preset-chip';
+    chip.innerHTML = `${preset.name}<small>${preset.size} · ${preset.mg}mg</small>`;
+    chip.addEventListener('click', () => {
+      addDrink(preset.name, preset.mg, Date.now());
+    });
+    container.appendChild(chip);
+  });
+}
+
+/* =========================================================================
+   ADD / REMOVE
+   ========================================================================= */
+
+function addDrink(name, mg, timestamp){
+  if(!name || !mg || mg <= 0) return;
+  drinks.push({
+    id: Math.random().toString(36).slice(2),
+    name,
+    mg: Math.round(mg),
+    timestamp,
+  });
+  saveDrinks();
+  renderAll();
+}
+
+document.getElementById('addCustomBtn').addEventListener('click', () => {
+  const nameInput = document.getElementById('drinkName');
+  const mgInput = document.getElementById('drinkMg');
+  const timeInput = document.getElementById('drinkTime');
+
+  const name = nameInput.value.trim() || 'Custom drink';
+  const mg = parseFloat(mgInput.value);
+
+  let timestamp = Date.now();
+  if(timeInput.value){
+    const [h, m] = timeInput.value.split(':').map(Number);
+    const d = new Date();
+    d.setHours(h, m, 0, 0);
+    timestamp = d.getTime();
+  }
+
+  addDrink(name, mg, timestamp);
+  nameInput.value = '';
+  mgInput.value = '';
+  timeInput.value = '';
+});
+
+/* =========================================================================
+   INIT
+   ========================================================================= */
+
+function renderAll(){
+  renderHero();
+  renderChart();
+  renderLog();
+}
+
+renderPresets();
+renderAll();
+window.addEventListener('resize', renderChart);
+
+// Recompute the decay curve every minute so "now" keeps moving.
+setInterval(renderAll, 60000);
+</script>
+
+</body>
+</html>
