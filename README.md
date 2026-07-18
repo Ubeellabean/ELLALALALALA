@@ -1,17 +1,8 @@
 # Half-Life — Caffeine Tracker
 
-A single-file web app that estimates how much caffeine is in your system throughout the day, based on how much you've had and when, using a standard exponential decay (half-life) model.
+This website estimates how much caffeine is in your system throughout the day, based on how much you've had and when, using a standard exponential decay (half-life) model.
 
-Everything — HTML, CSS, and JavaScript — lives in one file: `index.html`. No build step, no dependencies.
 
-## Put it on GitHub Pages
-
-1. Create a new GitHub repo (or use an existing one).
-2. Add `index.html` to the root of the repo.
-3. Commit and push.
-4. In the repo, go to **Settings → Pages**.
-5. Under **Build and deployment**, set **Source** to `Deploy from a branch`, pick your branch (usually `main`) and `/ (root)` as the folder.
-6. Save. GitHub will give you a URL like `https://your-username.github.io/your-repo/` within a minute or two.
 
 That's it — no server, no npm install.
 
