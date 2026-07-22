@@ -4,7 +4,6 @@ This website estimates how much caffeine is in your system throughout the day, b
 
 
 
-That's it — no server, no npm install.
 
 ## How the math works
 
