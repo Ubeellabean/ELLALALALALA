@@ -98,7 +98,7 @@ header.hero{
   white-space:nowrap;
 }
 .status-safe{ color:var(--sage); }
-.status-warn{ color:var(--rust); }
+.status-warn{ color:var(--espresso); }
 
 .half-life-note{
   font-family:var(--mono);
@@ -268,7 +268,7 @@ ul.log-list{ list-style:none; display:flex; flex-direction:column; gap:0.5rem; }
   line-height:1;
   padding:0.2rem 0.4rem;
 }
-.remove-btn:hover{ color:var(--rust); }
+.remove-btn:hover{ color:var(--espresso); }
 
 .empty-state{
   color:var(--steam);
@@ -622,7 +622,7 @@ function renderLog(){
   const pct = Math.min(100, (total / CONFIG.DAILY_LIMIT_MG) * 100);
   const fill = document.getElementById('dailyBarFill');
   fill.style.width = pct + '%';
-  fill.style.background = total > CONFIG.DAILY_LIMIT_MG ? 'var(--rust)' : 'var(--sage)';
+  fill.style.background = total > CONFIG.DAILY_LIMIT_MG ? 'var(--espresso)' : 'var(--sage)';
 }
 
 function escapeHtml(str){
