@@ -21,8 +21,8 @@
   --crema:      #F2E8D8;   /* primary text, warm cream        */
   --crema-2:    #F2E8D8;   /* secondary text / hairlines      */
   --crema-3:    #F2E8D8;   /* accent — brand, links, "on"     */
-  --espresso-3: #C98d51;   /* warning / over-limit accent     */
-  --sage:       #C98d51;   /* safe / under-limit accent       */
+  --espresso-3: #2A1F1A;   /* warning / over-limit accent     */
+  --sage:       #2A1F1A;   /* safe / under-limit accent       */
 
   --display: 'Tilt Warp', serif;
   --body: 'Sniglet', -apple-system, sans-serif;
@@ -515,7 +515,7 @@ function renderChart(){
   ctx.strokeStyle = 'rgba(154,140,125,0.18)';
   ctx.lineWidth = 1;
   ctx.font = "11px 'JetBrains Mono', monospace";
-  ctx.fillStyle = '#9A8C7D';
+  ctx.fillStyle = '#2A1F1A';
   for(let h=0; h<=24; h+=6){
     const x = padL + (h/24)*plotW;
     ctx.beginPath();
@@ -528,7 +528,7 @@ function renderChart(){
 
   // guideline (daily limit)
   const limitY = yForLvl(CONFIG.DAILY_LIMIT_MG);
-  ctx.strokeStyle = '#B0543A';
+  ctx.strokeStyle = '#2A1F1A';
   ctx.setLineDash([4,4]);
   ctx.beginPath();
   ctx.moveTo(padL, limitY);
@@ -539,7 +539,7 @@ function renderChart(){
   // now line
   if(now >= startMs && now <= startMs + totalHours*3600000){
     const nowX = xForT(now);
-    ctx.strokeStyle = '#F2E8D8';
+    ctx.strokeStyle = '#2A1F1A';
     ctx.globalAlpha = 0.5;
     ctx.setLineDash([2,3]);
     ctx.beginPath();
