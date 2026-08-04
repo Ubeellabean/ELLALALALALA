@@ -148,10 +148,24 @@ h2{
 section.add-section{ padding:2.5rem 0; border-bottom:1px solid rgba(154,140,125,0.25); }
 
 .presets{
+  margin-bottom:1.4rem;
+}
+
+.preset-category{
+  font-family:var(--Tilt Warp);
+  font-size:0.7rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--espresso);
+  margin:1.1rem 0 0.5rem;
+}
+.preset-category:first-child{ margin-top:0; }
+
+.preset-row{
   display:flex;
   flex-wrap:wrap;
   gap:0.6rem;
-  margin-bottom:1.4rem;
+}
 }
 
 .preset-chip{
@@ -640,14 +654,33 @@ function escapeHtml(str){
 function renderPresets(){
   const container = document.getElementById('presetContainer');
   container.innerHTML = '';
+
+  const groups = {};
   CONFIG.PRESETS.forEach(preset => {
+     const cat = preset.category || 'Other';
+     if(!groups[cat]) = [];
+     groups[cat].push(preset);
+  });
+
+Object.keys(groups).forEach(category => {
+   const heading = document.createElement('div')
+   heading.className = 'preset-category';
+   heading.textContent = category;
+   container.appendChild(heading);
+
+   const row = document.createElement('div');
+   row.className = 'preset-row';
+   
+  groups[category].forEach(preset => {
     const chip = document.createElement('button');
     chip.className = 'preset-chip';
     chip.innerHTML = `${preset.name}<small>${preset.size} · ${preset.mg}mg</small>`;
     chip.addEventListener('click', () => {
       addDrink(preset.name, preset.mg, Date.now());
-    });
-    container.appendChild(chip);
+     });
+     row.appendChild(chip);
+  });
+ container.appendChild(chip);
   });
 }
 
