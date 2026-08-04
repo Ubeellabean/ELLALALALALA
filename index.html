@@ -655,32 +655,34 @@ function renderPresets(){
   const container = document.getElementById('presetContainer');
   container.innerHTML = '';
 
+  // Group presets by category, keeping the order categories first appear in
   const groups = {};
   CONFIG.PRESETS.forEach(preset => {
-     const cat = preset.category || 'Other';
-     if(!groups[cat]) = [];
-     groups[cat].push(preset);
+    const cat = preset.category || 'Other';
+    if(!groups[cat]) groups[cat] = [];
+    groups[cat].push(preset);
   });
 
-Object.keys(groups).forEach(category => {
-   const heading = document.createElement('div')
-   heading.className = 'preset-category';
-   heading.textContent = category;
-   container.appendChild(heading);
+  Object.keys(groups).forEach(category => {
+    const heading = document.createElement('div');
+    heading.className = 'preset-category';
+    heading.textContent = category;
+    container.appendChild(heading);
 
-   const row = document.createElement('div');
-   row.className = 'preset-row';
-   
-  groups[category].forEach(preset => {
-    const chip = document.createElement('button');
-    chip.className = 'preset-chip';
-    chip.innerHTML = `${preset.name}<small>${preset.size} · ${preset.mg}mg</small>`;
-    chip.addEventListener('click', () => {
-      addDrink(preset.name, preset.mg, Date.now());
-     });
-     row.appendChild(chip);
-  });
- container.appendChild(chip);
+    const row = document.createElement('div');
+    row.className = 'preset-row';
+
+    groups[category].forEach(preset => {
+      const chip = document.createElement('button');
+      chip.className = 'preset-chip';
+      chip.innerHTML = `${preset.name}<small>${preset.size} · ${preset.mg}mg</small>`;
+      chip.addEventListener('click', () => {
+        addDrink(preset.name, preset.mg, Date.now());
+      });
+      row.appendChild(chip);
+    });
+
+    container.appendChild(row);
   });
 }
 
