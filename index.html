@@ -156,7 +156,7 @@ section.add-section{ padding:2.5rem 0; border-bottom:1px solid rgba(154,140,125,
   font-size:0.7rem;
   letter-spacing:0.08em;
   text-transform:uppercase;
-  color:var(--espresso);
+  color:var(--espresso-2);
   margin:1.1rem 0 0.5rem;
 }
 .preset-category:first-child{ margin-top:0; }
@@ -216,7 +216,7 @@ section.add-section{ padding:2.5rem 0; border-bottom:1px solid rgba(154,140,125,
 
 button.add-btn{
   background:var(--crema-3);
-  color:var(--espresso);
+  color:var(--espresso-2);
   border:none;
   font-family:var(--body);
   font-weight:600;
@@ -645,7 +645,7 @@ function renderLog(){
   const pct = Math.min(100, (total / CONFIG.DAILY_LIMIT_MG) * 100);
   const fill = document.getElementById('dailyBarFill');
   fill.style.width = pct + '%';
-  fill.style.background = total > CONFIG.DAILY_LIMIT_MG ? 'var(--espresso)' : 'var(--sage)';
+  fill.style.background = total > CONFIG.DAILY_LIMIT_MG ? 'var(--espresso-2)' : 'var(--sage)';
 }
 
 function escapeHtml(str){
