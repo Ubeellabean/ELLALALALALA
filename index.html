@@ -489,6 +489,7 @@ function renderHero(){
     pill.textContent = 'within guideline';
     pill.className = 'status-pill status-safe';
   }
+
   const label = document.getElementById('currentLevelLabel');
   if(drinks.length === 0){
     label.textContent = 'Log a drink to start tracking.';
@@ -500,8 +501,7 @@ function renderHero(){
     }
     label.textContent = `Roughly ${hoursToClear.toFixed(1)}h until this clears below 10mg.`;
   }
-        
-
+}
 
 /* =========================================================================
    RENDER — chart (canvas, no external libraries)
@@ -637,7 +637,7 @@ function renderLog(){
       `;
       list.appendChild(li);
     });
-
+  }
 
   list.querySelectorAll('.remove-btn').forEach(btn => {
     btn.addEventListener('click', () => {
