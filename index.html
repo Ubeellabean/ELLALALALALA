@@ -477,17 +477,7 @@ function renderHero(){
     Math.round(level) + '<span>mg in system</span>';
   document.getElementById('halfLifeReadout').textContent = CONFIG.HALF_LIFE_HOURS;
 
-  const pill = document.getElementById('statusPill');
-  const total = todayTotalMg();
-  if(total > CONFIG.DAILY_LIMIT_MG){
-    pill.textContent = 'over guideline';
-    pill.className = 'status-pill status-warn';
-  } else if(total > CONFIG.DAILY_LIMIT_MG * 0.75){
-    pill.textContent = 'approaching limit';
-    pill.className = 'status-pill status-warn';
-  } else {
-    pill.textContent = 'within guideline';
-    pill.className = 'status-pill status-safe';
+ 
   }
 
   const label = document.getElementById('currentLevelLabel');
@@ -637,6 +627,17 @@ function renderLog(){
       `;
       list.appendChild(li);
     });
+      const pill = document.getElementById('statusPill');
+  const total = todayTotalMg();
+  if(total > CONFIG.DAILY_LIMIT_MG){
+    pill.textContent = 'over guideline';
+    pill.className = 'status-pill status-warn';
+  } else if(total > CONFIG.DAILY_LIMIT_MG * 0.75){
+    pill.textContent = 'approaching limit';
+    pill.className = 'status-pill status-warn';
+  } else {
+    pill.textContent = 'within guideline';
+    pill.className = 'status-pill status-safe';
   }
 
   list.querySelectorAll('.remove-btn').forEach(btn => {
